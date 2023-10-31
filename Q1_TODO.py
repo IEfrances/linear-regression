@@ -18,8 +18,19 @@ def leastSquares(X, Y):
 
     # TODO: YOUR CODE HERE
     # closed form solution by matrix-vector representations only
+    # W = (X^T . X)^-1 (X^T . Y)
+   
+    X_transpose = np.transpose(X)
+    X_transpose_dot_Y = np.dot(X_transpose,Y)
 
+    X_transpose_dot_X = np.dot(X_transpose, X)
+    X_transpose_dot_X_inv = np.linalg.inv(X_transpose_dot_X)
+
+    w =  np.dot(X_transpose_dot_X_inv, X_transpose_dot_Y)
+
+  
     return w
+   
 
 
 def model(X, w):
@@ -27,9 +38,12 @@ def model(X, w):
     # w: d+1
     # return y_hat: M x 1
 
+
     # TODO: YOUR CODE HERE
+    y_hat = np.dot(X,w)
 
     return y_hat
+   
 
 
 def generate_data(M, var1, var2, degree):
@@ -46,6 +60,7 @@ def generate_data(M, var1, var2, degree):
            [0,  var2]]
 
     data = np.random.multivariate_normal(mu, Cov, M)
+  
     # shape: M x 2
 
     plt.figure()
@@ -86,66 +101,70 @@ def generate_data(M, var1, var2, degree):
 # Settings
 M = 5000
 var1 = 1
-var2 = 0.8
+var2_list = [0.1, 0.3, 0.8]
 degree = 45
 
-data = generate_data(M, var1, var2, degree)
-
-##########
-# Training the linear regression model predicting y from x (x2y)
-Input = data[:, 0].reshape((-1, 1))  # M x d, where d=1
-# M x (d+1) augmented feature
-Input_aug = np.concatenate([Input, np.ones([M, 1])], axis=1)
-Output = data[:, 1].reshape((-1, 1))  # M x 1
+for var2 in var2_list:
 
 
-w_x2y = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
-
-print('Predicting y from x (x2y): weight=' +
-      str(w_x2y[0, 0]), 'bias = ', str(w_x2y[1, 0]))
-
-# # Training the linear regression model predicting x from y (y2x)
-
-Input = data[:, 1].reshape((-1, 1))  # M x d, where d=1
-# M x (d+1) augmented feature
-Input_aug = np.concatenate([Input, np.ones([M, 1])], axis=1)
-Output = data[:, 0].reshape((-1, 1))  # M x 1
-
-w_y2x = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
-print('Predicting x from y (y2x): weight=' +
-      str(w_y2x[0, 0]), 'bias = ', str(w_y2x[1, 0]))
+    data = generate_data(M, var1, var2, degree)
 
 
-# plot the data points
-plt.figure()
-X = data[:, 0].reshape((-1, 1))  # M x d, where d=1
-Y = data[:, 1].reshape((-1, 1))  # M x d, where d=1
+    ##########
+    # Training the linear regression model predicting y from x (x2y)
+    Input = data[:, 0].reshape((-1, 1))  # M x d, where d=1
+    # M x (d+1) augmented feature
+    Input_aug = np.concatenate([Input, np.ones([M, 1])], axis=1)
+    Output = data[:, 1].reshape((-1, 1))  # M x 1
 
-plt.scatter(X, Y, color="blue", marker='x')
-plt.xlim(-4, 4)
-plt.ylim(-4, 4)
-plt.xlabel('x')
-plt.ylabel('y')
 
-# plot the line where data are mostly generated around
-X_new = np.linspace(-4, 4, 100, endpoint=True).reshape([100, 1])
+    w_x2y = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
 
-Y_new = np.tan(np.pi/180*degree)*X_new
-plt.plot(X_new, Y_new, color="blue", linestyle='dashed')
+    print('Predicting y from x (x2y): weight=' +
+        str(w_x2y[0, 0]), 'bias = ', str(w_x2y[1, 0]))
 
-# plot the prediction of y from x (x2y)
-# M x d, where d=1
-X_new = np.linspace(-4, 4, 100, endpoint=True).reshape([100, 1])
-# M x (d+1) augmented feature
-X_new_aug = np.concatenate([X_new, np.ones([X_new.shape[0], 1])], axis=1)
-plt.plot(X_new, model(X_new_aug, w_x2y), color="red", label="x2y")
+    # # Training the linear regression model predicting x from y (y2x)
 
-# plot the prediction of x from y (y2x)
-# M x d, where d=1
-Y_new = np.linspace(-4, 4, 100, endpoint=True).reshape([100, 1])
-# M x (d+1) augmented feature
-Y_new_aug = np.concatenate([X_new, np.ones([X_new.shape[0], 1])], axis=1)
-plt.plot(model(Y_new_aug, w_y2x), Y_new, color="green", label="y2x")
-plt.legend()
-plt.tight_layout()
-plt.savefig('Regression_model_' + str(var2) + '_' + str(degree) + '.jpg')
+    Input = data[:, 1].reshape((-1, 1))  # M x d, where d=1
+    # M x (d+1) augmented feature
+    Input_aug = np.concatenate([Input, np.ones([M, 1])], axis=1)
+    Output = data[:, 0].reshape((-1, 1))  # M x 1
+
+    w_y2x = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
+    print('Predicting x from y (y2x): weight=' +
+        str(w_y2x[0, 0]), 'bias = ', str(w_y2x[1, 0]))
+
+
+    # plot the data points
+    plt.figure()
+    X = data[:, 0].reshape((-1, 1))  # M x d, where d=1
+    Y = data[:, 1].reshape((-1, 1))  # M x d, where d=1
+
+    plt.scatter(X, Y, color="blue", marker='x')
+    plt.xlim(-4, 4)
+    plt.ylim(-4, 4)
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    # plot the line where data are mostly generated around
+    X_new = np.linspace(-4, 4, 100, endpoint=True).reshape([100, 1])
+
+    Y_new = np.tan(np.pi/180*degree)*X_new
+    plt.plot(X_new, Y_new, color="blue", linestyle='dashed')
+
+    # plot the prediction of y from x (x2y)
+    # M x d, where d=1
+    X_new = np.linspace(-4, 4, 100, endpoint=True).reshape([100, 1])
+    # M x (d+1) augmented feature
+    X_new_aug = np.concatenate([X_new, np.ones([X_new.shape[0], 1])], axis=1)
+    plt.plot(X_new, model(X_new_aug, w_x2y), color="red", label="x2y")
+
+    # plot the prediction of x from y (y2x)
+    # M x d, where d=1
+    Y_new = np.linspace(-4, 4, 100, endpoint=True).reshape([100, 1])
+    # M x (d+1) augmented feature
+    Y_new_aug = np.concatenate([X_new, np.ones([X_new.shape[0], 1])], axis=1)
+    plt.plot(model(Y_new_aug, w_y2x), Y_new, color="green", label="y2x")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('Regression_model_' + str(var2) + '_' + str(degree) + '.jpg')
