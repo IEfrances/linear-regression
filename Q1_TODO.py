@@ -18,8 +18,19 @@ def leastSquares(X, Y):
 
     # TODO: YOUR CODE HERE
     # closed form solution by matrix-vector representations only
+    # W = (X^T . X)^-1 (X^T . Y)
+   
+    X_transpose = np.transpose(X)
+    X_transpose_dot_Y = np.dot(X_transpose,Y)
 
+    X_transpose_dot_X = np.dot(X_transpose, X)
+    X_transpose_dot_X_inv = np.linalg.inv(X_transpose_dot_X)
+
+    w =  np.dot(X_transpose_dot_X_inv, X_transpose_dot_Y)
+
+  
     return w
+   
 
 
 def model(X, w):
@@ -27,9 +38,12 @@ def model(X, w):
     # w: d+1
     # return y_hat: M x 1
 
+
     # TODO: YOUR CODE HERE
+    y_hat = np.dot(X,w)
 
     return y_hat
+   
 
 
 def generate_data(M, var1, var2, degree):
@@ -46,6 +60,7 @@ def generate_data(M, var1, var2, degree):
            [0,  var2]]
 
     data = np.random.multivariate_normal(mu, Cov, M)
+  
     # shape: M x 2
 
     plt.figure()
@@ -90,6 +105,7 @@ var2 = 0.8
 degree = 45
 
 data = generate_data(M, var1, var2, degree)
+
 
 ##########
 # Training the linear regression model predicting y from x (x2y)
