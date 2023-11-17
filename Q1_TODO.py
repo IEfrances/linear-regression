@@ -20,9 +20,11 @@ def leastSquares(X, Y):
     # closed form solution by matrix-vector representations only
     # W = (X^T . X)^-1 (X^T . Y)
    
+    #Right term
     X_transpose = np.transpose(X)
     X_transpose_dot_Y = np.dot(X_transpose,Y)
-
+    
+    #left term
     X_transpose_dot_X = np.dot(X_transpose, X)
     X_transpose_dot_X_inv = np.linalg.inv(X_transpose_dot_X)
 
@@ -101,11 +103,13 @@ def generate_data(M, var1, var2, degree):
 # Settings
 M = 5000
 var1 = 1
-var2_list = [0.1, 0.3, 0.8]
+var2 = 0.1
+#var2_list = [0.1, 0.3, 0.8]
 degree = 45
+degree_list = [30,150,120]
 
-for var2 in var2_list:
-
+#for var2 in var2_list:
+for degree in degree_list:
 
     data = generate_data(M, var1, var2, degree)
 
@@ -121,7 +125,7 @@ for var2 in var2_list:
     w_x2y = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
 
     print('Predicting y from x (x2y): weight=' +
-        str(w_x2y[0, 0]), 'bias = ', str(w_x2y[1, 0]))
+    str(w_x2y[0, 0]), 'bias = ', str(w_x2y[1, 0]))
 
     # # Training the linear regression model predicting x from y (y2x)
 
@@ -132,7 +136,7 @@ for var2 in var2_list:
 
     w_y2x = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
     print('Predicting x from y (y2x): weight=' +
-        str(w_y2x[0, 0]), 'bias = ', str(w_y2x[1, 0]))
+    str(w_y2x[0, 0]), 'bias = ', str(w_y2x[1, 0]))
 
 
     # plot the data points
